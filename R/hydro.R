@@ -136,18 +136,23 @@ latitude <- function(template, already_latlong=FALSE){
 #' @param ncores number of computing cores to use for parallel processing
 #' @param already_latlong leave as F unless rasters are already in lat-long
 #'   projection
+#' @param filename output filename
+#' @param m see clusterR
 #' @param ... additional arguments to clusterR or writeRaster
 #' @return A raster stack with 5 layers: PPT, PET, AET, CWD, RAR
 #' @references Wang et al 2012 -- ClimateWNA -- Journal of Applied Meteorology
 #'   and Climatology. Shuttleworth 1993 -- Evaporation (chapter 4 in Handbook of
 #'   Hydrology). Hargreaves and Samani 1985 -- Reference Crop Evaporation from
 #'   Ambient Air Temperature
-hydro <- function(rasters, temp_scalar=1, ppt_scalar=1, ncores=1, already_latlong=F, ...){
+hydro <- function(rasters, temp_scalar=1, ppt_scalar=1,
+                  ncores=1, already_latlong=F, filename, m){
 
       requireNamespace("raster")
 
       # latitude raster
       lat <- latitude(rasters[[1]], already_latlong=already_latlong)
+      tempfile <- paste0(dirname(filename), "/temporary.tif")
+      lat <- writeRaster(lat, tempfile, overwrite=T)
       rasters <- stack(rasters, lat)
 
       # compute annual water balance variables
@@ -165,10 +170,11 @@ hydro <- function(rasters, temp_scalar=1, ppt_scalar=1, ncores=1, already_latlon
       beginCluster(ncores, type="SOCK")
       wb <- clusterR(rasters, calc, args=list(fun=w),
                      export=c("ETSR", "hargreaves", "water_balance", "monthly_S0"),
-                     ...)
+                     filename=filename, m=m)
       endCluster()
 
       names(wb) <- c("PPT", "PET", "AET", "CWD", "RAR")
+      file.remove(tempfile)
       return(wb)
 }
 
