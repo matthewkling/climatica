@@ -67,8 +67,9 @@ hargreaves <- function(S0, tmean, tmin, tmax){
 #' @param tmean vector of length 12, degrees C
 #' @param tmax vector of length 12, degrees C
 #' @param tmin vector of length 12, degrees C
+#' @param annual logical, if FALSE will return monthly values
 #' @return A named vector of hydrologic variables: PPT, PET, AET, CWD, RAR
-water_balance <- function(latitude, ppt, tmean, tmax, tmin){
+water_balance <- function(latitude, ppt, tmean, tmax, tmin, annual=TRUE){
 
       if(is.na(tmean[1])) return(rep(NA, 5))
 
@@ -86,8 +87,9 @@ water_balance <- function(latitude, ppt, tmean, tmax, tmin){
       cmd <- pmax(0, pet - ppt)
       rr <- pmax(0, ppt - pet)
 
-      # annual sums
-      return(c(PPT=sum(ppt), PET=sum(pet), AET=sum(aet), CWD=sum(cmd), RAR=sum(rr)))
+      m <- cbind(PPT=ppt, PET=pet, AET=aet, CWD=cmd, RAR=rr)
+      if(annual) return(colSums(m)) else(return(m))
+      #return(c(PPT=sum(ppt), PET=sum(pet), AET=sum(aet), CWD=sum(cmd), RAR=sum(rr)))
 }
 
 

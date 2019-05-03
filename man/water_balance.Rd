@@ -4,7 +4,7 @@
 \alias{water_balance}
 \title{Annual water balance variables for one site}
 \usage{
-water_balance(latitude, ppt, tmean, tmax, tmin)
+water_balance(latitude, ppt, tmean, tmax, tmin, annual = TRUE)
 }
 \arguments{
 \item{latitude}{degrees}
@@ -16,6 +16,8 @@ water_balance(latitude, ppt, tmean, tmax, tmin)
 \item{tmax}{vector of length 12, degrees C}
 
 \item{tmin}{vector of length 12, degrees C}
+
+\item{annual}{logical, if FALSE will return monthly values}
 }
 \value{
 A named vector of hydrologic variables: PPT, PET, AET, CWD, RAR
